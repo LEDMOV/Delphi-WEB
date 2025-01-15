@@ -1,40 +1,75 @@
 // src/components/layouts/Header.js
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 const Header = () => (
   <header className="bg-gray-800 text-white p-4 shadow">
     <nav className="flex justify-center items-center space-x-4">
-      <Link
+      <NavLink
         to="/flashcards"
-        className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300 transform hover:scale-105"
+        className={({ isActive }) =>
+          `py-2 px-4 rounded transition duration-300 transform hover:scale-105 ${
+            isActive ? 'shadow-lg' : ''
+          }`
+        }
+        style={({ isActive }) => ({
+          backgroundColor: isActive ? 'rgb(75 85 99)' : 'rgb(31 41 55)', // Match banner color with slight variation for active
+        })}
       >
         Flashcards
-      </Link>
-      <Link
+      </NavLink>
+      <NavLink
         to="/podcasts"
-        className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300 transform hover:scale-105"
+        className={({ isActive }) =>
+          `py-2 px-4 rounded transition duration-300 transform hover:scale-105 ${
+            isActive ? 'shadow-lg' : ''
+          }`
+        }
+        style={({ isActive }) => ({
+          backgroundColor: isActive ? 'rgb(75 85 99)' : 'rgb(31 41 55)', // Match banner color with slight variation for active
+        })}
       >
         Podcasts
-      </Link>
-      <Link
+      </NavLink>
+      <NavLink
         to="/"
-        className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition duration-300 transform hover:scale-105"
+        className={({ isActive }) =>
+          `py-2 px-4 rounded transition duration-300 transform hover:scale-105 ${
+            isActive ? 'shadow-lg' : ''
+          }`
+        }
+        style={({ isActive }) => ({
+          backgroundColor: isActive ? 'rgb(75 85 99)' : 'rgb(31 41 55)', // Match banner color with slight variation for active
+        })}
       >
         Home
-      </Link>
-      <Link
+      </NavLink>
+      <NavLink
         to="/chatbot"
-        className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300 transform hover:scale-105"
+        className={({ isActive }) =>
+          `py-2 px-4 rounded transition duration-300 transform hover:scale-105 ${
+            isActive ? 'shadow-lg' : ''
+          }`
+        }
+        style={({ isActive }) => ({
+          backgroundColor: isActive ? 'rgb(75 85 99)' : 'rgb(31 41 55)', // Match banner color with slight variation for active
+        })}
       >
         Chatbot
-      </Link>
-      <Link
+      </NavLink>
+      <NavLink
         to="/notes"
-        className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300 transform hover:scale-105"
+        className={({ isActive }) =>
+          `py-2 px-4 rounded transition duration-300 transform hover:scale-105 ${
+            isActive ? 'shadow-lg' : ''
+          }`
+        }
+        style={({ isActive }) => ({
+          backgroundColor: isActive ? 'rgb(75 85 99)' : 'rgb(31 41 55)', // Match banner color with slight variation for active
+        })}
       >
         Notes
-      </Link>
+      </NavLink>
     </nav>
   </header>
 );
