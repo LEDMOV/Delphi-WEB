@@ -1,6 +1,6 @@
 // src/components/pages/Flashcards.js
 import React, { useState } from 'react';
-import './Flashcards.css'; // Ensure this import is correct
+import './Flashcards.css';
 
 const Flashcards = () => {
   const [flashcards, setFlashcards] = useState([
@@ -15,8 +15,14 @@ const Flashcards = () => {
     setFlipped(false);
   };
 
-  const toggleFlip = () => {
+  const toggleFlip = (e) => {
+    e.stopPropagation(); // Prevents closing the fullscreen when clicking on the card
     setFlipped(!flipped);
+  };
+
+  const handleOverlayClick = () => {
+    setFullscreenCard(null);
+    setFlipped(false);
   };
 
   return (
@@ -37,7 +43,7 @@ const Flashcards = () => {
       {fullscreenCard && (
         <div
           className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-8"
-          onClick={() => toggleFullscreen(null)}
+          onClick={handleOverlayClick}
         >
           <div
             className={`relative bg-white shadow-lg rounded-lg max-w-3xl w-full h-3/4 transform transition duration-300 ${
@@ -48,21 +54,9 @@ const Flashcards = () => {
             <div className="flip-card-inner">
               <div className="flip-card-front p-8">
                 <h2 className="text-2xl font-bold mb-4 text-gray-800">{fullscreenCard.question}</h2>
-                <button
-                  className="mt-4 py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300"
-                  onClick={() => toggleFullscreen(null)}
-                >
-                  Close
-                </button>
               </div>
               <div className="flip-card-back p-8">
                 <h2 className="text-2xl font-bold mb-4 text-gray-800">{fullscreenCard.answer}</h2>
-                <button
-                  className="mt-4 py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300"
-                  onClick={() => toggleFullscreen(null)}
-                >
-                  Close
-                </button>
               </div>
             </div>
           </div>
