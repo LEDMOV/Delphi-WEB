@@ -17,10 +17,12 @@
   
   .flip-card-front {
     transform: rotateY(0deg);
+    backface-visibility: hidden;
   }
   
   .flip-card-back {
     transform: rotateY(180deg);
+    backface-visibility: hidden;
   }
   
   .flip {
