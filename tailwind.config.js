@@ -3,15 +3,8 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
-      colors: {
-        'delphi-blue': '#1e40af',
-        'delphi-green': '#10b981',
-      },
       fontFamily: {
-        'custom': ['"Open Sans"', 'sans-serif'],
-      },
-      screens: {
-        'xs': '480px',
+        'custom': ['"Segoe UI"', 'Open Sans', 'sans-serif'],
       },
     },
   },
