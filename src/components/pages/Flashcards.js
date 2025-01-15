@@ -97,10 +97,10 @@ const Flashcards = () => {
           >
             <div className="flip-card-inner">
               <div className="flip-card-front p-8 flex items-center justify-center">
-                <h2 className="text-2xl font-bold mb-4 text-gray-800">{fullscreenCard.question}</h2>
+                <h2 className="text-2xl font-bold text-gray-800">{fullscreenCard.question}</h2>
               </div>
               <div className="flip-card-back p-8 flex items-center justify-center">
-                <h2 className="text-2xl font-bold mb-4 text-gray-800">{fullscreenCard.answer}</h2>
+                <h2 className="text-2xl font-bold text-gray-800">{fullscreenCard.answer}</h2>
               </div>
             </div>
           </div>
