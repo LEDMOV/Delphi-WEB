@@ -1,6 +1,6 @@
 // src/components/pages/Flashcards.js
 import React, { useState } from 'react';
-import './Flashcards.css'; // Create a separate CSS file for custom styles
+import './Flashcards.css'; // Ensure this import is correct
 
 const Flashcards = () => {
   const [flashcards, setFlashcards] = useState([
