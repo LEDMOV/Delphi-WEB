@@ -1,3 +1,4 @@
+// src/components/pages/Flashcards.js
 import React, { useState } from 'react';
 
 const Flashcards = () => {
@@ -7,8 +8,8 @@ const Flashcards = () => {
   ]);
 
   return (
-    <div>
-      <h1 className="text-2xl mb-4">Flashcards</h1>
+    <div className="text-center">
+      <h1 className="text-4xl mb-4">Flashcards</h1>
       <div className="grid gap-4">
         {flashcards.map(card => (
           <div key={card.id} className="p-4 bg-white shadow-lg rounded-lg">

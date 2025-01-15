@@ -1,10 +1,10 @@
-// src/components/Home.js
+// src/components/pages/Home.js
 import React from 'react';
 
 const Home = () => (
-  <div>
-    <h1 className="text-2xl">Welcome to Delphi</h1>
-    <p>Select a feature from the menu to get started.</p>
+  <div className="text-center">
+    <h1 className="text-4xl mb-4">Welcome to Delphi</h1>
+    <p className="text-lg">Select a feature from the menu to get started.</p>
   </div>
 );
 

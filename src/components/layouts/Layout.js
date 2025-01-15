@@ -5,7 +5,11 @@ import Header from './Header';
 const Layout = ({ children }) => (
   <>
     <Header />
-    <main className="p-4">{children}</main>
+    <main className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="max-w-3xl w-full mx-auto p-4 bg-white shadow-lg rounded-lg">
+        {children}
+      </div>
+    </main>
   </>
 );
 
