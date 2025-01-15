@@ -9,6 +9,7 @@ const Flashcards = () => {
   ]);
   const [fullscreenCard, setFullscreenCard] = useState(null);
   const [flipped, setFlipped] = useState(false);
+  const [newCard, setNewCard] = useState({ question: '', answer: '' });
 
   const toggleFullscreen = (card) => {
     setFullscreenCard(fullscreenCard ? null : card);
@@ -16,7 +17,7 @@ const Flashcards = () => {
   };
 
   const toggleFlip = (e) => {
-    e.stopPropagation(); // Prevents closing the fullscreen when clicking on the card
+    e.stopPropagation();
     setFlipped(!flipped);
   };
 
@@ -25,9 +26,52 @@ const Flashcards = () => {
     setFlipped(false);
   };
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewCard({ ...newCard, [name]: value });
+  };
+
+  const handleAddCard = (e) => {
+    e.preventDefault();
+    if (newCard.question && newCard.answer) {
+      setFlashcards([...flashcards, { ...newCard, id: flashcards.length + 1 }]);
+      setNewCard({ question: '', answer: '' });
+    }
+  };
+
   return (
     <div className="text-center font-custom p-8">
       <h1 className="text-4xl mb-4 text-gray-800">Flashcards</h1>
+      <form onSubmit={handleAddCard} className="mb-4">
+        <div className="mb-2">
+          <input
+            type="text"
+            name="question"
+            value={newCard.question}
+            onChange={handleInputChange}
+            placeholder="Question"
+            className="w-full p-2 border border-gray-300 rounded mb-2"
+            required
+          />
+        </div>
+        <div className="mb-2">
+          <input
+            type="text"
+            name="answer"
+            value={newCard.answer}
+            onChange={handleInputChange}
+            placeholder="Answer"
+            className="w-full p-2 border border-gray-300 rounded mb-2"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          className="py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 transition duration-300"
+        >
+          Add Flashcard
+        </button>
+      </form>
       <div className={`grid gap-4 ${fullscreenCard ? 'hidden' : ''}`}>
         {flashcards.map(card => (
           <div
