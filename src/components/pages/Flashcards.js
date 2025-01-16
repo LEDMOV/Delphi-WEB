@@ -1,4 +1,3 @@
-// src/components/pages/Flashcards.js
 import React, { useState } from 'react';
 import './Flashcards.css';
 
@@ -12,7 +11,7 @@ const Flashcards = () => {
   const [newCard, setNewCard] = useState({ question: '', answer: '' });
 
   const toggleFullscreen = (card) => {
-    setFullscreenCard(fullscreenCard ? null : card);
+    setFullscreenCard(card);
     setFlipped(false);
   };
 
