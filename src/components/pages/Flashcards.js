@@ -1,14 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { db, auth } from '../firebase';
+import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 import './Flashcards.css';
 
 const Flashcards = () => {
-  const [flashcards, setFlashcards] = useState([
-    { id: 1, question: 'What is React?', answer: 'A JavaScript library for building user interfaces.' },
-    { id: 2, question: 'What is JSX?', answer: 'A syntax extension for JavaScript that looks similar to XML.' },
-  ]);
+  const [flashcards, setFlashcards] = useState([]);
   const [fullscreenCard, setFullscreenCard] = useState(null);
   const [flipped, setFlipped] = useState(false);
   const [newCard, setNewCard] = useState({ question: '', answer: '' });
+
+  useEffect(() => {
+    if (auth.currentUser) {
+      const fetchFlashcards = async () => {
+        const q = query(
+          collection(db, 'flashcards'),
+          where('userId', '==', auth.currentUser.uid)
+        );
+        const querySnapshot = await getDocs(q);
+        const userFlashcards = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setFlashcards(userFlashcards);
+      };
+      fetchFlashcards();
+    }
+  }, [auth.currentUser]);
 
   const toggleFullscreen = (card) => {
     setFullscreenCard(card);
@@ -30,10 +47,15 @@ const Flashcards = () => {
     setNewCard({ ...newCard, [name]: value });
   };
 
-  const handleAddCard = (e) => {
+  const handleAddCard = async (e) => {
     e.preventDefault();
     if (newCard.question && newCard.answer) {
-      setFlashcards([...flashcards, { ...newCard, id: flashcards.length + 1 }]);
+      const newFlashcard = {
+        ...newCard,
+        userId: auth.currentUser.uid
+      };
+      const docRef = await addDoc(collection(db, 'flashcards'), newFlashcard);
+      setFlashcards([...flashcards, { id: docRef.id, ...newFlashcard }]);
       setNewCard({ question: '', answer: '' });
     }
   };
