@@ -89,7 +89,7 @@ const Flashcards = () => {
           onClick={handleOverlayClick}
         >
           <div
-            className={`relative bg-white shadow-lg rounded-lg max-w-3xl w-full h-3/4 transform transition duration-300 ${
+            className={`flip-card relative bg-white shadow-lg rounded-lg max-w-3xl w-full h-3/4 transform transition duration-300 ${
               flipped ? 'flip' : ''
             }`}
             onClick={toggleFlip}
