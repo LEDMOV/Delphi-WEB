@@ -8,6 +8,7 @@ import Podcasts from './components/pages/Podcasts';
 import Chatbot from './components/pages/Chatbot';
 import Notes from './components/pages/Notes';
 import Home from './components/pages/Home';
+import Profile from './components/pages/Profile'; // Import the Profile component
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/podcasts" element={<Podcasts />} />
         <Route path="/chatbot" element={<Chatbot />} />
         <Route path="/notes" element={<Notes />} />
+        <Route path="/profile" element={<Profile />} /> {/* Add profile route */}
         <Route path="/" element={<Home />} />
       </Routes>
     </Router>
