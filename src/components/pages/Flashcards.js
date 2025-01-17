@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { db, auth } from './firebase.js';
+import { db, auth } from '../firebase.js';
 import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 import './Flashcards.css';
 
