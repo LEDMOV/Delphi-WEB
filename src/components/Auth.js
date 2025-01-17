@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { auth } from '../firebase';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import './Auth.css';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [user, setUser] = useState(null);
+  const [isLogin, setIsLogin] = useState(true);
 
   const handleSignup = () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        setUser(userCredential.user);
+        console.log(userCredential.user);
       })
       .catch((error) => {
         console.error(error);
@@ -20,48 +21,49 @@ const Auth = () => {
   const handleLogin = () => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        setUser(userCredential.user);
+        console.log(userCredential.user);
       })
       .catch((error) => {
         console.error(error);
       });
   };
 
-  const handleLogout = () => {
-    signOut(auth)
-      .then(() => {
-        setUser(null);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  const toggleAuthMode = () => {
+    setIsLogin(!isLogin);
   };
 
   return (
-    <div>
-      {user ? (
-        <div>
-          <p>Welcome, {user.email}</p>
-          <button onClick={handleLogout}>Logout</button>
-        </div>
-      ) : (
-        <div>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-          />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-          />
-          <button onClick={handleSignup}>Sign Up</button>
-          <button onClick={handleLogin}>Login</button>
-        </div>
-      )}
+    <div className="auth-container">
+      <h1>{isLogin ? 'Login' : 'Sign Up'}</h1>
+      <form className="auth-form" onSubmit={e => e.preventDefault()}>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
+          required
+        />
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+          required
+        />
+        <button
+          onClick={isLogin ? handleLogin : handleSignup}
+          className="auth-button"
+        >
+          {isLogin ? 'Login' : 'Sign Up'}
+        </button>
+        <button
+          type="button"
+          onClick={toggleAuthMode}
+          className="toggle-button"
+        >
+          {isLogin ? 'Switch to Sign Up' : 'Switch to Login'}
+        </button>
+      </form>
     </div>
   );
 };
