@@ -1,20 +1,36 @@
 /* src/components/pages/Profile.css */
 .profile-container {
-  max-width: 400px;
   margin: 50px auto;
   padding: 20px;
-  border: 1px solid #e0e0e0;
-  border-radius: 5px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.profile-container h1 {
+.profile-header {
+  display: flex;
+  align-items: center;
   margin-bottom: 20px;
-  font-size: 2em;
-  text-align: center;
 }
 
-.profile-form, .profile-details {
+.profile-pic-large {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-right: 20px;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.profile-info h2 {
+  margin: 0;
+}
+
+.profile-form {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -26,6 +42,8 @@
   font-size: 1em;
   border: 1px solid #e0e0e0;
   border-radius: 5px;
+  width: 100%;
+  max-width: 300px;
 }
 
 .profile-button, .edit-button, .cancel-button {
@@ -72,15 +90,10 @@
   margin-bottom: 10px;
   padding: 10px;
   border-radius: 5px;
+  width: 100%;
+  max-width: 300px;
 }
 
 .success-message {
   background-color: #28a745;
-}
-
-.profile-pic-large {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  margin-bottom: 15px;
 }
