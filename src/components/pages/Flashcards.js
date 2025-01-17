@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { db, auth } from '.vercel/path0/components/pages/firebase.js'; // Correct relative path
+import { db, auth } from '.delphi-web/.vercel/path0/components/pages/firebase.js'; // Correct relative path
 import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 import './Flashcards.css';
 
