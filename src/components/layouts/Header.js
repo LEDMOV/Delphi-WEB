@@ -3,7 +3,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 const Header = () => (
-  <header className="bg-gray-800 text-white p-4 shadow">
+  <header className="bg-gray-800 text-white p-4 shadow flex justify-between items-center">
     <nav className="flex justify-center items-center space-x-4">
       <NavLink
         to="/flashcards"
@@ -71,6 +71,12 @@ const Header = () => (
         Notes
       </NavLink>
     </nav>
+    <NavLink
+      to="/login"
+      className="py-2 px-4 rounded bg-blue-500 hover:bg-blue-600 transition duration-300 transform hover:scale-105 text-white"
+    >
+      Login
+    </NavLink>
   </header>
 );
 
