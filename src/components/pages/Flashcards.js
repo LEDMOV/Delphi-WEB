@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { db, auth } from '.// src/components/Auth.js
+import { db, auth } from '.// src/components/Auth.js'
 import React, { useState } from 'react';
 import { auth } from '.delphi-web/src/firebase.js';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
