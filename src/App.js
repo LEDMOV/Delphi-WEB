@@ -4,6 +4,10 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './components/layouts/Header';
 import Auth from './components/Auth';
 import Flashcards from './components/pages/Flashcards';
+import Podcasts from './components/pages/Podcasts';
+import Chatbot from './components/pages/Chatbot';
+import Notes from './components/pages/Notes';
+import Home from './components/pages/Home';
 
 function App() {
   return (
@@ -12,10 +16,10 @@ function App() {
       <Routes>
         <Route path="/login" element={<Auth />} />
         <Route path="/flashcards" element={<Flashcards />} />
-        <Route path="/podcasts" element={<Podcasts />} /> {/* Add Podcasts component if needed */}
-        <Route path="/chatbot" element={<Chatbot />} /> {/* Add Chatbot component if needed */}
-        <Route path="/notes" element={<Notes />} /> {/* Add Notes component if needed */}
-        <Route path="/" element={<Home />} /> {/* Add Home component if needed */}
+        <Route path="/podcasts" element={<Podcasts />} />
+        <Route path="/chatbot" element={<Chatbot />} />
+        <Route path="/notes" element={<Notes />} />
+        <Route path="/" element={<Home />} />
       </Routes>
     </Router>
   );

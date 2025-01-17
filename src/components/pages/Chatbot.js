@@ -1,11 +1,8 @@
-// src/components/Chatbot.js
+// src/components/pages/Chatbot.js
 import React from 'react';
 
-const Chatbot = () => (
-  <div>
-    <h1 className="text-2xl">Chatbot</h1>
-    <p>Chatbot functionality will go here.</p>
-  </div>
-);
+const Chatbot = () => {
+  return <div>Chatbot Page</div>;
+};
 
 export default Chatbot;

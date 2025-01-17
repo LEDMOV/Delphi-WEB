@@ -1,11 +1,8 @@
-// src/components/Podcasts.js
+// src/components/pages/Podcasts.js
 import React from 'react';
 
-const Podcasts = () => (
-  <div>
-    <h1 className="text-2xl">Podcasts</h1>
-    <p>Podcast functionality will go here.</p>
-  </div>
-);
+const Podcasts = () => {
+  return <div>Podcasts Page</div>;
+};
 
 export default Podcasts;
