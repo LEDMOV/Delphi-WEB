@@ -88,7 +88,7 @@ const Header = () => {
           {user.photoURL ? (
             <img src={user.photoURL} alt="Profile" className="profile-pic" />
           ) : (
-            <span className="profile-name">{user.displayName}</span>
+            <span className="profile-name">{user.displayName || "Profile"}</span>
           )}
         </NavLink>
       ) : (
