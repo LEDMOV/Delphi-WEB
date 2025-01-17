@@ -1,56 +1,86 @@
 /* src/components/pages/Profile.css */
 .profile-container {
-    max-width: 400px;
-    margin: 50px auto;
-    padding: 20px;
-    border: 1px solid #e0e0e0;
-    border-radius: 5px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .profile-container h1 {
-    margin-bottom: 20px;
-    font-size: 2em;
-    text-align: center;
-  }
-  
-  .profile-form {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .profile-form input {
-    margin-bottom: 15px;
-    padding: 10px;
-    font-size: 1em;
-    border: 1px solid #e0e0e0;
-    border-radius: 5px;
-  }
-  
-  .profile-button {
-    padding: 10px 20px;
-    font-size: 1em;
-    border: none;
-    border-radius: 5px;
-    background-color: #007bff;
-    color: #fff;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .profile-button:hover {
-    background-color: #0056b3;
-  }
-  
-  .error-message {
-    color: red;
-    text-align: center;
-    margin-bottom: 10px;
-  }
-  
-  .success-message {
-    color: green;
-    text-align: center;
-    margin-bottom: 10px;
-  }
-  
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-container h1 {
+  margin-bottom: 20px;
+  font-size: 2em;
+  text-align: center;
+}
+
+.profile-form, .profile-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-form input {
+  margin-bottom: 15px;
+  padding: 10px;
+  font-size: 1em;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+}
+
+.profile-button, .edit-button, .cancel-button {
+  padding: 10px 20px;
+  font-size: 1em;
+  border: none;
+  border-radius: 5px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.profile-button {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.profile-button:hover {
+  background-color: #0056b3;
+}
+
+.cancel-button {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.cancel-button:hover {
+  background-color: #5a6268;
+}
+
+.edit-button {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.edit-button:hover {
+  background-color: #218838;
+}
+
+.error-message, .success-message {
+  color: #fff;
+  background-color: #dc3545;
+  text-align: center;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.success-message {
+  background-color: #28a745;
+}
+
+.profile-pic-large {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-bottom: 15px;
+}

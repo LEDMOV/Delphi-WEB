@@ -11,25 +11,28 @@ const Profile = () => {
   const [realName, setRealName] = useState('');
   const [studying, setStudying] = useState('');
   const [profilePic, setProfilePic] = useState(null);
+  const [photoURL, setPhotoURL] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [isEditMode, setIsEditMode] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const docRef = doc(db, 'users', auth.currentUser.uid);
-      const docSnap = await getDoc(docRef);
+      if (auth.currentUser) {
+        const docRef = doc(db, 'users', auth.currentUser.uid);
+        const docSnap = await getDoc(docRef);
 
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        setDisplayName(data.displayName || '');
-        setRealName(data.realName || '');
-        setStudying(data.studying || '');
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setDisplayName(data.displayName || '');
+          setRealName(data.realName || '');
+          setStudying(data.studying || '');
+          setPhotoURL(data.photoURL || '');
+        }
       }
     };
 
-    if (auth.currentUser) {
-      fetchProfile();
-    }
+    fetchProfile();
   }, []);
 
   const handleFileChange = (e) => {
@@ -42,23 +45,25 @@ const Profile = () => {
     setSuccess('');
 
     try {
-      let photoURL = auth.currentUser.photoURL;
+      let newPhotoURL = photoURL;
 
       if (profilePic) {
         const storageRef = ref(storage, `profile_pictures/${auth.currentUser.uid}`);
         await uploadBytes(storageRef, profilePic);
-        photoURL = await getDownloadURL(storageRef);
+        newPhotoURL = await getDownloadURL(storageRef);
       }
 
-      await updateProfile(auth.currentUser, { displayName, photoURL });
+      await updateProfile(auth.currentUser, { displayName, photoURL: newPhotoURL });
       await setDoc(doc(db, 'users', auth.currentUser.uid), {
         displayName,
         realName,
         studying,
-        photoURL
+        photoURL: newPhotoURL
       });
 
+      setPhotoURL(newPhotoURL);
       setSuccess('Profile updated successfully!');
+      setIsEditMode(false);
     } catch (error) {
       setError('Failed to update profile: ' + error.message);
     }
@@ -66,35 +71,46 @@ const Profile = () => {
 
   return (
     <div className="profile-container">
-      <h1>Update Profile</h1>
+      <h1>Profile</h1>
       {error && <p className="error-message">{error}</p>}
       {success && <p className="success-message">{success}</p>}
-      <form className="profile-form" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={displayName}
-          onChange={(e) => setDisplayName(e.target.value)}
-          placeholder="Display Name"
-          required
-        />
-        <input
-          type="text"
-          value={realName}
-          onChange={(e) => setRealName(e.target.value)}
-          placeholder="Real Name (Optional)"
-        />
-        <input
-          type="text"
-          value={studying}
-          onChange={(e) => setStudying(e.target.value)}
-          placeholder="What You're Studying"
-        />
-        <input
-          type="file"
-          onChange={handleFileChange}
-        />
-        <button type="submit" className="profile-button">Update Profile</button>
-      </form>
+      {isEditMode ? (
+        <form className="profile-form" onSubmit={handleSubmit}>
+          <input
+            type="text"
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            placeholder="Display Name"
+            required
+          />
+          <input
+            type="text"
+            value={realName}
+            onChange={(e) => setRealName(e.target.value)}
+            placeholder="Real Name (Optional)"
+          />
+          <input
+            type="text"
+            value={studying}
+            onChange={(e) => setStudying(e.target.value)}
+            placeholder="What You're Studying"
+          />
+          <input
+            type="file"
+            onChange={handleFileChange}
+          />
+          <button type="submit" className="profile-button">Update Profile</button>
+          <button type="button" className="cancel-button" onClick={() => setIsEditMode(false)}>Cancel</button>
+        </form>
+      ) : (
+        <div className="profile-details">
+          <img src={photoURL} alt="Profile" className="profile-pic-large" />
+          <h2>{displayName}</h2>
+          <p>{realName}</p>
+          <p>{studying}</p>
+          <button className="edit-button" onClick={() => setIsEditMode(true)}>Edit Profile</button>
+        </div>
+      )}
     </div>
   );
 };
