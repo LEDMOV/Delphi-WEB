@@ -1,6 +1,6 @@
 // src/components/Auth.js
 import React, { useState } from 'react';
-import { auth } from 'delphi-web/src/firebase.js';
+import { auth } from './firebase.js';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 
 const Auth = () => {
