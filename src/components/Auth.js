@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { auth } from '../../.vercel/path0/components/pages/firebase'; // Correct relative path to firebase.js
+import { auth } from '../firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 
 const Auth = () => {
