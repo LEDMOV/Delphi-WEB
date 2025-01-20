@@ -11,6 +11,7 @@ const Flashcards = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
+  // Function to fetch flashcards
   const fetchFlashcards = async () => {
     setLoading(true);
     try {
@@ -34,18 +35,21 @@ const Flashcards = () => {
     setLoading(false);
   };
 
+  // UseEffect hook to fetch flashcards when user logs in
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
       if (user) {
         fetchFlashcards();
       } else {
         setFlashcards([]);
+        setLoading(false);
       }
     });
 
     return () => unsubscribe();
   }, []);
 
+  // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -67,10 +71,12 @@ const Flashcards = () => {
       setAnswer('');
       fetchFlashcards();
     } catch (error) {
+      console.error("Error saving flashcard:", error); // Debugging line
       setError('Failed to save flashcard: ' + error.message);
     }
   };
 
+  // Function to handle flashcard flip
   const handleFlip = (index) => {
     const newFlashcards = [...flashcards];
     newFlashcards[index].flipped = !newFlashcards[index].flipped;
