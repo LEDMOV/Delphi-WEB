@@ -36,6 +36,7 @@ const Flashcards = () => {
     setLoading(false);
   };
 
+  // UseEffect hook to fetch flashcards when user logs in
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
       console.log("Auth State Changed:", user); // Debugging line
@@ -50,6 +51,7 @@ const Flashcards = () => {
     return () => unsubscribe();
   }, []);
 
+  // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -77,6 +79,7 @@ const Flashcards = () => {
     }
   };
 
+  // Function to handle flashcard flip
   const handleFlip = (index) => {
     const newFlashcards = [...flashcards];
     newFlashcards[index].flipped = !newFlashcards[index].flipped;
