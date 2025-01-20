@@ -1,127 +1,116 @@
+// src/components/pages/Flashcards.js
 import React, { useState, useEffect } from 'react';
-import { db, auth } from '../../firebase';
-import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
+import { auth, db } from '../../firebase';
+import { collection, addDoc, getDocs, query, where, orderBy } from 'firebase/firestore';
 import './Flashcards.css';
 
 const Flashcards = () => {
   const [flashcards, setFlashcards] = useState([]);
-  const [fullscreenCard, setFullscreenCard] = useState(null);
-  const [flipped, setFlipped] = useState(false);
-  const [newCard, setNewCard] = useState({ question: '', answer: '' });
+  const [question, setQuestion] = useState('');
+  const [answer, setAnswer] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  const fetchFlashcards = async () => {
+    setLoading(true);
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        throw new Error("User not authenticated.");
+      }
+
+      const q = query(collection(db, 'flashcards'), where('uid', '==', user.uid), orderBy('createdAt', 'desc'));
+      const querySnapshot = await getDocs(q);
+
+      const flashcardsData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      setFlashcards(flashcardsData);
+    } catch (error) {
+      setError('Failed to fetch flashcards: ' + error.message);
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
-    if (auth.currentUser) {
-      const fetchFlashcards = async () => {
-        const q = query(
-          collection(db, 'flashcards'),
-          where('userId', '==', auth.currentUser.uid)
-        );
-        const querySnapshot = await getDocs(q);
-        const userFlashcards = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        setFlashcards(userFlashcards);
-      };
-      fetchFlashcards();
-    }
-  }, [auth.currentUser]);
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      if (user) {
+        fetchFlashcards();
+      } else {
+        setFlashcards([]);
+      }
+    });
 
-  const toggleFullscreen = (card) => {
-    setFullscreenCard(card);
-    setFlipped(false);
-  };
+    return () => unsubscribe();
+  }, []);
 
-  const toggleFlip = (e) => {
-    e.stopPropagation();
-    setFlipped(!flipped);
-  };
-
-  const handleOverlayClick = () => {
-    setFullscreenCard(null);
-    setFlipped(false);
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewCard({ ...newCard, [name]: value });
-  };
-
-  const handleAddCard = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (newCard.question && newCard.answer) {
-      const newFlashcard = {
-        ...newCard,
-        userId: auth.currentUser.uid
-      };
-      const docRef = await addDoc(collection(db, 'flashcards'), newFlashcard);
-      setFlashcards([...flashcards, { id: docRef.id, ...newFlashcard }]);
-      setNewCard({ question: '', answer: '' });
+    setError('');
+
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        throw new Error("User not authenticated.");
+      }
+
+      await addDoc(collection(db, 'flashcards'), {
+        uid: user.uid,
+        question,
+        answer,
+        createdAt: new Date().toISOString()
+      });
+
+      setQuestion('');
+      setAnswer('');
+      fetchFlashcards();
+    } catch (error) {
+      setError('Failed to save flashcard: ' + error.message);
     }
+  };
+
+  const handleFlip = (index) => {
+    const newFlashcards = [...flashcards];
+    newFlashcards[index].flipped = !newFlashcards[index].flipped;
+    setFlashcards(newFlashcards);
   };
 
   return (
-    <div className="text-center font-custom p-8">
-      <h1 className="text-4xl mb-4 text-gray-800">Flashcards</h1>
-      <form onSubmit={handleAddCard} className="mb-4">
-        <div className="mb-2">
-          <input
-            type="text"
-            name="question"
-            value={newCard.question}
-            onChange={handleInputChange}
-            placeholder="Question"
-            className="w-full p-2 border border-gray-300 rounded mb-2"
-            required
-          />
-        </div>
-        <div className="mb-2">
-          <input
-            type="text"
-            name="answer"
-            value={newCard.answer}
-            onChange={handleInputChange}
-            placeholder="Answer"
-            className="w-full p-2 border border-gray-300 rounded mb-2"
-            required
-          />
-        </div>
-        <button
-          type="submit"
-          className="py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 transition duration-300"
-        >
-          Add Flashcard
-        </button>
+    <div className="flashcards-container">
+      <h1>Flashcards</h1>
+      {error && <p className="error-message">{error}</p>}
+      <form className="flashcards-form" onSubmit={handleSubmit}>
+        <input
+          type="text"
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+          placeholder="Question"
+          required
+        />
+        <input
+          type="text"
+          value={answer}
+          onChange={(e) => setAnswer(e.target.value)}
+          placeholder="Answer"
+          required
+        />
+        <button type="submit" className="flashcards-button">Add Flashcard</button>
       </form>
-      <div className={`grid gap-4 ${fullscreenCard ? 'hidden' : ''}`}>
-        {flashcards.map(card => (
-          <div
-            key={card.id}
-            className="p-4 bg-white shadow-lg rounded-lg transform transition duration-300 hover:scale-105 cursor-pointer"
-            onClick={() => toggleFullscreen(card)}
-          >
-            <h2 className="text-xl font-bold mb-2 text-gray-800">{card.question}</h2>
-          </div>
-        ))}
-      </div>
-      {fullscreenCard && (
-        <div
-          className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-8"
-          onClick={handleOverlayClick}
-        >
-          <div
-            className="flip-card relative bg-white shadow-lg rounded-lg max-w-3xl w-full h-3/4 transform transition duration-300"
-            onClick={toggleFlip}
-          >
-            <div className={`flip-card-inner ${flipped ? 'flip' : ''}`}>
-              <div className="flip-card-front p-8 flex items-center justify-center">
-                <h2 className="text-2xl font-bold text-gray-800">{fullscreenCard.question}</h2>
-              </div>
-              <div className="flip-card-back p-8 flex items-center justify-center">
-                <h2 className="text-2xl font-bold text-gray-800">{fullscreenCard.answer}</h2>
-              </div>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <div className="flashcards-list">
+          {flashcards.map((flashcard, index) => (
+            <div key={flashcard.id} className={`flashcard ${flashcard.flipped ? 'flipped' : ''}`} onClick={() => handleFlip(index)}>
+              {flashcard.flipped ? (
+                <p><strong>Answer:</strong> {flashcard.answer}</p>
+              ) : (
+                <p><strong>Question:</strong> {flashcard.question}</p>
+              )}
             </div>
-          </div>
+          ))}
         </div>
       )}
     </div>

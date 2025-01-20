@@ -63,25 +63,26 @@ const Profile = () => {
 
       setPhotoURL(newPhotoURL);
       setSuccess('Profile updated successfully!');
-      setIsEditMode(false); // Exit edit mode on successful update
+      setIsEditMode(false);
     } catch (error) {
       setError('Failed to update profile: ' + error.message);
     }
   };
 
   return (
-    <div className="profile-container">
-      <div className="profile-header">
+    <div className="profile-page">
+      <h1 className="profile-header">Profile</h1>
+      {error && <p className="error-message">{error}</p>}
+      {success && <p className="success-message">{success}</p>}
+      <div className="profile-content">
         <img src={photoURL} alt="Profile" className="profile-pic-large" />
         <div className="profile-info">
           <h2>{displayName}</h2>
           <p>{realName}</p>
           <p>{studying}</p>
-          <button className="edit-button" onClick={() => setIsEditMode(true)}>Edit Profile</button>
         </div>
       </div>
-      {error && <p className="error-message">{error}</p>}
-      {success && <p className="success-message">{success}</p>}
+      <button className="edit-button" onClick={() => setIsEditMode(true)}>Edit Profile</button>
       {isEditMode && (
         <form className="profile-form" onSubmit={handleSubmit}>
           <input
