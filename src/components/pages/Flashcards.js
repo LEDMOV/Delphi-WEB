@@ -16,6 +16,7 @@ const Flashcards = () => {
     setLoading(true);
     try {
       const user = auth.currentUser;
+      console.log("Authenticated User:", user); // Debugging line
       if (!user) {
         throw new Error("User not authenticated.");
       }
@@ -35,9 +36,9 @@ const Flashcards = () => {
     setLoading(false);
   };
 
-  // UseEffect hook to fetch flashcards when user logs in
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
+      console.log("Auth State Changed:", user); // Debugging line
       if (user) {
         fetchFlashcards();
       } else {
@@ -49,13 +50,13 @@ const Flashcards = () => {
     return () => unsubscribe();
   }, []);
 
-  // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
     try {
       const user = auth.currentUser;
+      console.log("Authenticated User:", user); // Debugging line
       if (!user) {
         throw new Error("User not authenticated.");
       }
@@ -76,7 +77,6 @@ const Flashcards = () => {
     }
   };
 
-  // Function to handle flashcard flip
   const handleFlip = (index) => {
     const newFlashcards = [...flashcards];
     newFlashcards[index].flipped = !newFlashcards[index].flipped;
