@@ -22,15 +22,20 @@ const Flashcards = () => {
       }
 
       const q = query(collection(db, 'flashcards'), where('uid', '==', user.uid), orderBy('createdAt', 'desc'));
+      console.log("Query:", q); // Debugging line
+      
       const querySnapshot = await getDocs(q);
+      console.log("Query Snapshot:", querySnapshot); // Debugging line
 
       const flashcardsData = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
+      console.log("Flashcards Data:", flashcardsData); // Debugging line
 
       setFlashcards(flashcardsData);
     } catch (error) {
+      console.error('Error fetching flashcards:', error); // Debugging line
       setError('Failed to fetch flashcards: ' + error.message);
     }
     setLoading(false);
