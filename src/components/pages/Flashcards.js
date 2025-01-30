@@ -1,5 +1,4 @@
-// src/components/pages/Flashcards.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { auth, db } from '../../firebase';
 import { collection, addDoc, getDocs, query, where, orderBy } from 'firebase/firestore';
 import './Flashcards.css';
@@ -12,7 +11,7 @@ const Flashcards = () => {
   const [loading, setLoading] = useState(true);
 
   // Function to fetch flashcards
-  const fetchFlashcards = async () => {
+  const fetchFlashcards = useCallback(async () => {
     setLoading(true);
     try {
       const user = auth.currentUser;
@@ -29,7 +28,8 @@ const Flashcards = () => {
 
       const flashcardsData = querySnapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
+        flipped: false // Initialize flipped state
       }));
       console.log("Flashcards Data:", flashcardsData); // Debugging line
 
@@ -39,10 +39,17 @@ const Flashcards = () => {
       setError('Failed to fetch flashcards: ' + error.message);
     }
     setLoading(false);
-  };
+  }, []);
 
   // UseEffect hook to fetch flashcards when user logs in
   useEffect(() => {
+    const user = auth.currentUser;
+    if (user) {
+      fetchFlashcards();
+    } else {
+      setLoading(false);
+    }
+
     const unsubscribe = auth.onAuthStateChanged(user => {
       console.log("Auth State Changed:", user); // Debugging line
       if (user) {
@@ -54,7 +61,7 @@ const Flashcards = () => {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [fetchFlashcards]);
 
   // Function to handle form submission
   const handleSubmit = async (e) => {
@@ -114,7 +121,7 @@ const Flashcards = () => {
       </form>
       {loading ? (
         <p>Loading...</p>
-      ) : (
+      ) : flashcards.length > 0 ? (
         <div className="flashcards-list">
           {flashcards.map((flashcard, index) => (
             <div key={flashcard.id} className={`flashcard ${flashcard.flipped ? 'flipped' : ''}`} onClick={() => handleFlip(index)}>
@@ -126,6 +133,8 @@ const Flashcards = () => {
             </div>
           ))}
         </div>
+      ) : (
+        <p>No flashcards found. Create one to get started!</p>
       )}
     </div>
   );
