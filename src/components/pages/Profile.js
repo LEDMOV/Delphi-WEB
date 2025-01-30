@@ -3,7 +3,7 @@ import { auth, storage, db } from '../../firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { updateProfile } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom'; // For redirecting after sign-out
+import { useNavigate } from 'react-router-dom';
 import './Profile.css';
 
 const Profile = () => {
@@ -67,7 +67,7 @@ const Profile = () => {
         realName,
         studying,
         photoURL: newPhotoURL
-      });
+      }, { merge: true });
 
       setPhotoURL(newPhotoURL);
       setSuccess('Profile updated successfully!');
@@ -81,7 +81,7 @@ const Profile = () => {
   const handleSignOut = async () => {
     try {
       await auth.signOut();
-      navigate('/login'); // Redirect to login page after sign-out
+      navigate('/login');
     } catch (error) {
       setError('Failed to sign out: ' + error.message);
     }
@@ -93,7 +93,7 @@ const Profile = () => {
       {error && <p className="error-message">{error}</p>}
       {success && <p className="success-message">{success}</p>}
       <div className="profile-content">
-        <img src={photoURL || 'https://via.placeholder.com/150'} alt="Profile" className="profile-pic-large" />
+        <img src={photoURL || 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fstock.adobe.com%2Fsearch%3Fk%3Dprofile%2Bplaceholder&psig=AOvVaw0RyYry2vjqGybV-Riv0Rpx&ust=1738364539199000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJDFs9nGnosDFQAAAAAdAAAAABAI'} alt="Profile" className="profile-pic-large" />
         <div className="profile-info">
           <h2>{displayName}</h2>
           <p>{realName}</p>
