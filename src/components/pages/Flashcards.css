@@ -59,7 +59,7 @@
 }
 
 .flashcard.flipped {
-  transform: rotateY(270deg);
+  transform: rotateY(180deg);
 }
 
 .flashcard p {
