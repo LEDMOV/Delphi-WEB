@@ -1,12 +1,16 @@
 /* src/components/pages/Profile.css */
 .profile-page {
+  max-width: 600px;
   margin: 50px auto;
   padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
 }
 
 .profile-header {
   font-size: 2.5em;
-  text-align: center;
   margin-bottom: 20px;
 }
 
@@ -14,6 +18,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-bottom: 20px;
 }
 
 .profile-pic-large {
@@ -21,21 +26,29 @@
   height: 150px;
   border-radius: 50%;
   margin-bottom: 20px;
+  object-fit: cover; /* Ensure the image fits well */
 }
 
 .profile-info {
   text-align: center;
-  margin-bottom: 20px;
 }
 
 .profile-info h2 {
   margin: 0;
+  font-size: 1.8em;
+}
+
+.profile-info p {
+  margin: 5px 0;
+  font-size: 1.2em;
+  color: #555;
 }
 
 .profile-form {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 20px;
 }
 
 .profile-form input {
@@ -48,7 +61,7 @@
   max-width: 300px;
 }
 
-.profile-button, .edit-button, .cancel-button {
+.profile-button, .edit-button, .cancel-button, .sign-out-button {
   padding: 10px 20px;
   font-size: 1em;
   border: none;
@@ -83,6 +96,15 @@
 
 .edit-button:hover {
   background-color: #218838;
+}
+
+.sign-out-button {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.sign-out-button:hover {
+  background-color: #c82333;
 }
 
 .error-message, .success-message {

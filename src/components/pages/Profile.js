@@ -1,9 +1,9 @@
-// src/components/pages/Profile.js
 import React, { useState, useEffect } from 'react';
 import { auth, storage, db } from '../../firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { updateProfile } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom'; // For redirecting after sign-out
 import './Profile.css';
 
 const Profile = () => {
@@ -15,7 +15,9 @@ const Profile = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isEditMode, setIsEditMode] = useState(false);
+  const navigate = useNavigate();
 
+  // Fetch profile data on component mount
   useEffect(() => {
     const fetchProfile = async () => {
       if (auth.currentUser) {
@@ -35,10 +37,12 @@ const Profile = () => {
     fetchProfile();
   }, []);
 
+  // Handle file input change
   const handleFileChange = (e) => {
     setProfilePic(e.target.files[0]);
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -47,13 +51,17 @@ const Profile = () => {
     try {
       let newPhotoURL = photoURL;
 
+      // Upload new profile picture if selected
       if (profilePic) {
         const storageRef = ref(storage, `profile_pictures/${auth.currentUser.uid}`);
         await uploadBytes(storageRef, profilePic);
         newPhotoURL = await getDownloadURL(storageRef);
       }
 
+      // Update Firebase Authentication profile
       await updateProfile(auth.currentUser, { displayName, photoURL: newPhotoURL });
+
+      // Update Firestore profile data
       await setDoc(doc(db, 'users', auth.currentUser.uid), {
         displayName,
         realName,
@@ -69,13 +77,23 @@ const Profile = () => {
     }
   };
 
+  // Handle sign-out
+  const handleSignOut = async () => {
+    try {
+      await auth.signOut();
+      navigate('/login'); // Redirect to login page after sign-out
+    } catch (error) {
+      setError('Failed to sign out: ' + error.message);
+    }
+  };
+
   return (
     <div className="profile-page">
       <h1 className="profile-header">Profile</h1>
       {error && <p className="error-message">{error}</p>}
       {success && <p className="success-message">{success}</p>}
       <div className="profile-content">
-        <img src={photoURL} alt="Profile" className="profile-pic-large" />
+        <img src={photoURL || 'https://via.placeholder.com/150'} alt="Profile" className="profile-pic-large" />
         <div className="profile-info">
           <h2>{displayName}</h2>
           <p>{realName}</p>
@@ -83,6 +101,7 @@ const Profile = () => {
         </div>
       </div>
       <button className="edit-button" onClick={() => setIsEditMode(true)}>Edit Profile</button>
+      <button className="sign-out-button" onClick={handleSignOut}>Sign Out</button>
       {isEditMode && (
         <form className="profile-form" onSubmit={handleSubmit}>
           <input
