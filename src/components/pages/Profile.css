@@ -31,6 +31,10 @@
 
 .profile-info {
   text-align: center;
+  max-width: 100%; /* Prevent text overflow */
+  overflow: hidden; /* Hide overflowing text */
+  white-space: nowrap; /* Prevent text from wrapping */
+  text-overflow: ellipsis; /* Add ellipsis (...) for overflow */
 }
 
 .profile-info h2 {
@@ -42,6 +46,13 @@
   margin: 5px 0;
   font-size: 1.2em;
   color: #555;
+}
+
+.profile-buttons {
+  display: flex;
+  gap: 10px; /* Space between buttons */
+  justify-content: center;
+  margin-top: 20px;
 }
 
 .profile-form {
@@ -66,7 +77,6 @@
   font-size: 1em;
   border: none;
   border-radius: 5px;
-  margin-top: 10px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }

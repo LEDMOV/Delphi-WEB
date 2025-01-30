@@ -73,7 +73,6 @@ const Profile = () => {
       setSuccess('Profile updated successfully!');
       setIsEditMode(false);
     } catch (error) {
-      console.error('Error updating profile:', error); // Debugging line
       setError('Failed to update profile: ' + error.message);
     }
   };
@@ -95,11 +94,11 @@ const Profile = () => {
       {success && <p className="success-message">{success}</p>}
       <div className="profile-content">
         <img
-          src={photoURL || 'https://t3.ftcdn.net/jpg/05/16/27/58/360_F_516275801_f3Fsp17x6HQK0xQgDQEELoTuERO4SsWV.jpg'}
+          src={photoURL || 'https://via.placeholder.com/150'}
           alt="Profile"
           className="profile-pic-large"
           onError={(e) => {
-            e.target.src = 'https://t3.ftcdn.net/jpg/05/16/27/58/360_F_516275801_f3Fsp17x6HQK0xQgDQEELoTuERO4SsWV.jpg'; // Fallback to placeholder if the image fails to load
+            e.target.src = 'https://via.placeholder.com/150'; // Fallback to placeholder if the image fails to load
           }}
         />
         <div className="profile-info">
@@ -108,8 +107,10 @@ const Profile = () => {
           <p>{studying}</p>
         </div>
       </div>
-      <button className="edit-button" onClick={() => setIsEditMode(true)}>Edit Profile</button>
-      <button className="sign-out-button" onClick={handleSignOut}>Sign Out</button>
+      <div className="profile-buttons">
+        <button className="edit-button" onClick={() => setIsEditMode(true)}>Edit Profile</button>
+        <button className="sign-out-button" onClick={handleSignOut}>Sign Out</button>
+      </div>
       {isEditMode && (
         <form className="profile-form" onSubmit={handleSubmit}>
           <input
