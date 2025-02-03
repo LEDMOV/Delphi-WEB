@@ -1,3 +1,4 @@
+/* Existing Styles */
 .flashcards-container {
   max-width: 600px;
   margin: 50px auto;
@@ -161,4 +162,49 @@
   color: #dc3545;
   text-align: center;
   margin-bottom: 10px;
+}
+
+/* New Styles for Editing Form */
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  width: 100%; /* Ensure the form takes full width */
+}
+
+.edit-form input {
+  padding: 10px;
+  font-size: 1em;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+}
+
+.edit-form button {
+  padding: 10px 20px;
+  font-size: 1em;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.edit-form button:first-child {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.edit-form button:first-child:hover {
+  background-color: #218838;
+}
+
+.edit-form button:last-child {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.edit-form button:last-child:hover {
+  background-color: #5a6268;
 }

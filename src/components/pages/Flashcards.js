@@ -11,6 +11,9 @@ const Flashcards = () => {
   const [loading, setLoading] = useState(true);
   const [fullscreenFlashcard, setFullscreenFlashcard] = useState(null); // Track fullscreen flashcard
   const [isFlipped, setIsFlipped] = useState(false); // Track flip state
+  const [isEditing, setIsEditing] = useState(false); // Track editing mode
+  const [editQuestion, setEditQuestion] = useState(''); // Track edited question
+  const [editAnswer, setEditAnswer] = useState(''); // Track edited answer
 
   // Fetch flashcards function
   const fetchFlashcards = async (user) => {
@@ -75,21 +78,28 @@ const Flashcards = () => {
     }
   };
 
-  // Edit a flashcard
-  const handleEditFlashcard = async (id, updatedQuestion, updatedAnswer) => {
+  // Enter editing mode
+  const handleEditClick = (flashcard) => {
+    setEditQuestion(flashcard.question);
+    setEditAnswer(flashcard.answer);
+    setIsEditing(true);
+  };
+
+  // Save edited flashcard
+  const handleSaveEdit = async () => {
     try {
       const user = auth.currentUser;
       if (!user) {
         throw new Error("User not authenticated.");
       }
 
-      const flashcardRef = doc(db, 'flashcards', id);
+      const flashcardRef = doc(db, 'flashcards', fullscreenFlashcard.id);
       await updateDoc(flashcardRef, {
-        question: updatedQuestion,
-        answer: updatedAnswer
+        question: editQuestion,
+        answer: editAnswer
       });
 
-      setFullscreenFlashcard(null); // Exit fullscreen mode
+      setIsEditing(false); // Exit editing mode
       fetchFlashcards(user); // Refresh the flashcards list
     } catch (error) {
       setError('Failed to update flashcard: ' + error.message);
@@ -116,6 +126,7 @@ const Flashcards = () => {
   const handleFlashcardClick = (flashcard) => {
     setFullscreenFlashcard(flashcard);
     setIsFlipped(false); // Reset flip state when entering fullscreen
+    setIsEditing(false); // Reset editing mode
   };
 
   // Handle click outside the flashcard (exit fullscreen)
@@ -172,16 +183,37 @@ const Flashcards = () => {
       {fullscreenFlashcard && (
         <div className="fullscreen-overlay" onClick={handleClickOutside}>
           <div className="fullscreen-flashcard">
-            <div className={`flashcard-content ${isFlipped ? 'flipped' : ''}`} onClick={handleFlip}>
-              <div className="flashcard-front">
-                <p><strong>Question:</strong> {fullscreenFlashcard.question}</p>
+            {isEditing ? (
+              <div className="edit-form">
+                <input
+                  type="text"
+                  value={editQuestion}
+                  onChange={(e) => setEditQuestion(e.target.value)}
+                  placeholder="Question"
+                  required
+                />
+                <input
+                  type="text"
+                  value={editAnswer}
+                  onChange={(e) => setEditAnswer(e.target.value)}
+                  placeholder="Answer"
+                  required
+                />
+                <button onClick={handleSaveEdit}>Save</button>
+                <button onClick={() => setIsEditing(false)}>Cancel</button>
               </div>
-              <div className="flashcard-back">
-                <p><strong>Answer:</strong> {fullscreenFlashcard.answer}</p>
+            ) : (
+              <div className={`flashcard-content ${isFlipped ? 'flipped' : ''}`} onClick={handleFlip}>
+                <div className="flashcard-front">
+                  <p><strong>Question:</strong> {fullscreenFlashcard.question}</p>
+                </div>
+                <div className="flashcard-back">
+                  <p><strong>Answer:</strong> {fullscreenFlashcard.answer}</p>
+                </div>
               </div>
-            </div>
+            )}
             <div className="flashcard-actions">
-              <button onClick={() => handleEditFlashcard(fullscreenFlashcard.id, fullscreenFlashcard.question, fullscreenFlashcard.answer)}>Edit</button>
+              <button onClick={() => handleEditClick(fullscreenFlashcard)}>Edit</button>
               <button onClick={() => handleDeleteFlashcard(fullscreenFlashcard.id)}>Delete</button>
             </div>
           </div>
