@@ -9,34 +9,44 @@ const Flashcards = () => {
   const [answer, setAnswer] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
-  const [selectedFlashcard, setSelectedFlashcard] = useState(null); // Track selected flashcard
+  const [fullscreenFlashcard, setFullscreenFlashcard] = useState(null); // Track fullscreen flashcard
+  const [isFlipped, setIsFlipped] = useState(false); // Track flip state
 
-  // Fetch flashcards
-  useEffect(() => {
-    const fetchFlashcards = async () => {
-      setLoading(true);
-      try {
-        const user = auth.currentUser;
-        if (!user) {
-          throw new Error("User not authenticated.");
-        }
-
-        const q = query(collection(db, 'flashcards'), where('uid', '==', user.uid), orderBy('createdAt', 'desc'));
-        const querySnapshot = await getDocs(q);
-
-        const flashcardsData = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-
-        setFlashcards(flashcardsData);
-      } catch (error) {
-        setError('Failed to fetch flashcards: ' + error.message);
+  // Fetch flashcards function
+  const fetchFlashcards = async (user) => {
+    setLoading(true);
+    try {
+      if (!user) {
+        throw new Error("User not authenticated.");
       }
-      setLoading(false);
-    };
 
-    fetchFlashcards();
+      const q = query(collection(db, 'flashcards'), where('uid', '==', user.uid), orderBy('createdAt', 'desc'));
+      const querySnapshot = await getDocs(q);
+
+      const flashcardsData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      setFlashcards(flashcardsData);
+    } catch (error) {
+      setError('Failed to fetch flashcards: ' + error.message);
+    }
+    setLoading(false);
+  };
+
+  // Fetch flashcards on component mount and auth state change
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        fetchFlashcards(user); // Fetch flashcards if the user is authenticated
+      } else {
+        setFlashcards([]); // Clear flashcards if the user is not authenticated
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe(); // Cleanup the listener on unmount
   }, []);
 
   // Add a new flashcard
@@ -59,7 +69,7 @@ const Flashcards = () => {
 
       setQuestion('');
       setAnswer('');
-      fetchFlashcards(); // Refresh the flashcards list
+      fetchFlashcards(user); // Refresh the flashcards list
     } catch (error) {
       setError('Failed to save flashcard: ' + error.message);
     }
@@ -68,14 +78,19 @@ const Flashcards = () => {
   // Edit a flashcard
   const handleEditFlashcard = async (id, updatedQuestion, updatedAnswer) => {
     try {
+      const user = auth.currentUser;
+      if (!user) {
+        throw new Error("User not authenticated.");
+      }
+
       const flashcardRef = doc(db, 'flashcards', id);
       await updateDoc(flashcardRef, {
         question: updatedQuestion,
         answer: updatedAnswer
       });
 
-      setSelectedFlashcard(null); // Close the edit modal
-      fetchFlashcards(); // Refresh the flashcards list
+      setFullscreenFlashcard(null); // Exit fullscreen mode
+      fetchFlashcards(user); // Refresh the flashcards list
     } catch (error) {
       setError('Failed to update flashcard: ' + error.message);
     }
@@ -84,20 +99,35 @@ const Flashcards = () => {
   // Delete a flashcard
   const handleDeleteFlashcard = async (id) => {
     try {
+      const user = auth.currentUser;
+      if (!user) {
+        throw new Error("User not authenticated.");
+      }
+
       await deleteDoc(doc(db, 'flashcards', id));
-      fetchFlashcards(); // Refresh the flashcards list
+      setFullscreenFlashcard(null); // Exit fullscreen mode
+      fetchFlashcards(user); // Refresh the flashcards list
     } catch (error) {
       setError('Failed to delete flashcard: ' + error.message);
     }
   };
 
-  // Handle flashcard click
+  // Handle flashcard click (enter fullscreen)
   const handleFlashcardClick = (flashcard) => {
-    if (selectedFlashcard && selectedFlashcard.id === flashcard.id) {
-      setSelectedFlashcard(null); // Deselect if the same flashcard is clicked again
-    } else {
-      setSelectedFlashcard(flashcard); // Select the clicked flashcard
+    setFullscreenFlashcard(flashcard);
+    setIsFlipped(false); // Reset flip state when entering fullscreen
+  };
+
+  // Handle click outside the flashcard (exit fullscreen)
+  const handleClickOutside = (e) => {
+    if (e.target.classList.contains('fullscreen-overlay')) {
+      setFullscreenFlashcard(null);
     }
+  };
+
+  // Handle flip in fullscreen mode
+  const handleFlip = () => {
+    setIsFlipped(!isFlipped);
   };
 
   return (
@@ -128,19 +158,33 @@ const Flashcards = () => {
           {flashcards.map((flashcard) => (
             <div
               key={flashcard.id}
-              className={`flashcard ${selectedFlashcard?.id === flashcard.id ? 'selected' : ''}`}
+              className="flashcard"
               onClick={() => handleFlashcardClick(flashcard)}
             >
               <p><strong>Question:</strong> {flashcard.question}</p>
               <p><strong>Answer:</strong> {flashcard.answer}</p>
-              {selectedFlashcard?.id === flashcard.id && (
-                <div className="flashcard-actions">
-                  <button onClick={() => handleEditFlashcard(flashcard.id, flashcard.question, flashcard.answer)}>Edit</button>
-                  <button onClick={() => handleDeleteFlashcard(flashcard.id)}>Delete</button>
-                </div>
-              )}
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Fullscreen Flashcard */}
+      {fullscreenFlashcard && (
+        <div className="fullscreen-overlay" onClick={handleClickOutside}>
+          <div className="fullscreen-flashcard">
+            <div className={`flashcard-content ${isFlipped ? 'flipped' : ''}`} onClick={handleFlip}>
+              <div className="flashcard-front">
+                <p><strong>Question:</strong> {fullscreenFlashcard.question}</p>
+              </div>
+              <div className="flashcard-back">
+                <p><strong>Answer:</strong> {fullscreenFlashcard.answer}</p>
+              </div>
+            </div>
+            <div className="flashcard-actions">
+              <button onClick={() => handleEditFlashcard(fullscreenFlashcard.id, fullscreenFlashcard.question, fullscreenFlashcard.answer)}>Edit</button>
+              <button onClick={() => handleDeleteFlashcard(fullscreenFlashcard.id)}>Delete</button>
+            </div>
+          </div>
         </div>
       )}
     </div>
