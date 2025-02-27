@@ -4,7 +4,9 @@ import { collection, addDoc, getDocs, query, where, orderBy, doc, updateDoc, del
 import './Flashcards.css';
 
 const Flashcards = () => {
-  const [flashcards, setFlashcards] = useState([]);
+  const [decks, setDecks] = useState([]); // Stores all decks
+  const [selectedDeck, setSelectedDeck] = useState(null); // Currently selected deck
+  const [flashcards, setFlashcards] = useState([]); // Flashcards for the selected deck
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [error, setError] = useState('');
@@ -14,16 +16,43 @@ const Flashcards = () => {
   const [isEditing, setIsEditing] = useState(false); // Track editing mode
   const [editQuestion, setEditQuestion] = useState(''); // Track edited question
   const [editAnswer, setEditAnswer] = useState(''); // Track edited answer
+  const [newDeckName, setNewDeckName] = useState(''); // Track new deck name
 
-  // Fetch flashcards function
-  const fetchFlashcards = async (user) => {
+  // Fetch decks function
+  const fetchDecks = async (user) => {
     setLoading(true);
     try {
       if (!user) {
         throw new Error("User not authenticated.");
       }
 
-      const q = query(collection(db, 'flashcards'), where('uid', '==', user.uid), orderBy('createdAt', 'desc'));
+      const q = query(collection(db, 'decks'), where('uid', '==', user.uid), orderBy('createdAt', 'desc'));
+      const querySnapshot = await getDocs(q);
+
+      const decksData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      setDecks(decksData);
+      if (decksData.length > 0) {
+        setSelectedDeck(decksData[0].id); // Select the first deck by default
+      }
+    } catch (error) {
+      setError('Failed to fetch decks: ' + error.message);
+    }
+    setLoading(false);
+  };
+
+  // Fetch flashcards for the selected deck
+  const fetchFlashcards = async (user, deckId) => {
+    setLoading(true);
+    try {
+      if (!user) {
+        throw new Error("User not authenticated.");
+      }
+
+      const q = query(collection(db, 'flashcards'), where('uid', '==', user.uid), where('deckId', '==', deckId), orderBy('createdAt', 'desc'));
       const querySnapshot = await getDocs(q);
 
       const flashcardsData = querySnapshot.docs.map(doc => ({
@@ -38,13 +67,14 @@ const Flashcards = () => {
     setLoading(false);
   };
 
-  // Fetch flashcards on component mount and auth state change
+  // Fetch decks and flashcards on component mount and auth state change
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        fetchFlashcards(user); // Fetch flashcards if the user is authenticated
+        fetchDecks(user); // Fetch decks if the user is authenticated
       } else {
-        setFlashcards([]); // Clear flashcards if the user is not authenticated
+        setDecks([]); // Clear decks if the user is not authenticated
+        setFlashcards([]);
         setLoading(false);
       }
     });
@@ -52,9 +82,18 @@ const Flashcards = () => {
     return () => unsubscribe(); // Cleanup the listener on unmount
   }, []);
 
-  // Add a new flashcard
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Fetch flashcards when the selected deck changes
+  useEffect(() => {
+    if (selectedDeck) {
+      const user = auth.currentUser;
+      if (user) {
+        fetchFlashcards(user, selectedDeck);
+      }
+    }
+  }, [selectedDeck]);
+
+  // Add a new deck
+  const handleAddDeck = async () => {
     setError('');
 
     try {
@@ -63,8 +102,33 @@ const Flashcards = () => {
         throw new Error("User not authenticated.");
       }
 
+      await addDoc(collection(db, 'decks'), {
+        uid: user.uid,
+        name: newDeckName,
+        createdAt: new Date().toISOString()
+      });
+
+      setNewDeckName('');
+      fetchDecks(user); // Refresh the decks list
+    } catch (error) {
+      setError('Failed to create deck: ' + error.message);
+    }
+  };
+
+  // Add a new flashcard
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      const user = auth.currentUser;
+      if (!user || !selectedDeck) {
+        throw new Error("User not authenticated or no deck selected.");
+      }
+
       await addDoc(collection(db, 'flashcards'), {
         uid: user.uid,
+        deckId: selectedDeck,
         question,
         answer,
         createdAt: new Date().toISOString()
@@ -72,7 +136,7 @@ const Flashcards = () => {
 
       setQuestion('');
       setAnswer('');
-      fetchFlashcards(user); // Refresh the flashcards list
+      fetchFlashcards(user, selectedDeck); // Refresh the flashcards list
     } catch (error) {
       setError('Failed to save flashcard: ' + error.message);
     }
@@ -100,7 +164,7 @@ const Flashcards = () => {
       });
 
       setIsEditing(false); // Exit editing mode
-      fetchFlashcards(user); // Refresh the flashcards list
+      fetchFlashcards(user, selectedDeck); // Refresh the flashcards list
     } catch (error) {
       setError('Failed to update flashcard: ' + error.message);
     }
@@ -116,7 +180,7 @@ const Flashcards = () => {
 
       await deleteDoc(doc(db, 'flashcards', id));
       setFullscreenFlashcard(null); // Exit fullscreen mode
-      fetchFlashcards(user); // Refresh the flashcards list
+      fetchFlashcards(user, selectedDeck); // Refresh the flashcards list
     } catch (error) {
       setError('Failed to delete flashcard: ' + error.message);
     }
@@ -145,6 +209,31 @@ const Flashcards = () => {
     <div className="flashcards-container">
       <h1>Flashcards</h1>
       {error && <p className="error-message">{error}</p>}
+
+      {/* Deck Selection */}
+      <div className="deck-selection">
+        <select
+          value={selectedDeck || ''}
+          onChange={(e) => setSelectedDeck(e.target.value)}
+          disabled={loading}
+        >
+          <option value="" disabled>Select a deck</option>
+          {decks.map((deck) => (
+            <option key={deck.id} value={deck.id}>
+              {deck.name}
+            </option>
+          ))}
+        </select>
+        <input
+          type="text"
+          value={newDeckName}
+          onChange={(e) => setNewDeckName(e.target.value)}
+          placeholder="New deck name"
+        />
+        <button onClick={handleAddDeck}>Add Deck</button>
+      </div>
+
+      {/* Flashcard Form */}
       <form className="flashcards-form" onSubmit={handleSubmit}>
         <input
           type="text"
@@ -162,6 +251,8 @@ const Flashcards = () => {
         />
         <button type="submit" className="flashcards-button">Add Flashcard</button>
       </form>
+
+      {/* Flashcards List */}
       {loading ? (
         <p>Loading...</p>
       ) : (
