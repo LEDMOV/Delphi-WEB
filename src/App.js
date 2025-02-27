@@ -9,7 +9,6 @@ import Chatbot from './components/pages/Chatbot';
 import Notes from './components/pages/Notes';
 import Home from './components/pages/Home';
 import Profile from './components/pages/Profile'; // Import the Profile component
-import SignOutButton from './components/SignOutButton'; // Import the SignOutButton component
 
 function App() {
   return (
