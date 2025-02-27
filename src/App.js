@@ -14,7 +14,6 @@ function App() {
   return (
     <Router>
       <Header />
-      <SignOutButton /> {/* Add the sign-out button here */}
       <Routes>
         <Route path="/login" element={<Auth />} />
         <Route path="/flashcards" element={<Flashcards />} />
